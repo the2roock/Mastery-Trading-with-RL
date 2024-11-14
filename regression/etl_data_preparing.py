@@ -31,6 +31,7 @@ class DataPrepareETL:
         self.df = self._load_data(data) if isinstance(data, str) else data
         self._check_data(self.df)
         self.scaler = self._load_scaler(scaler) if isinstance(scaler, str) else scaler
+        self.y_column_idx = self.df.columns.to_list().index("Close")
 
     def _load_data(self, data_filename: str):
         data = pd.read_csv(data_filename, parse_dates=True, index_col="time_open")
@@ -53,7 +54,7 @@ class DataPrepareETL:
         X, y = list(), list()
         for i in range(0, len(normalized) - (self.sequence_length + self.target_idx), self.target_idx):
             features_vector = normalized[i:i + self.sequence_length]
-            y.append(normalized[i + self.sequence_length + self.target_idx, -1])
+            y.append(normalized[i + self.sequence_length + self.target_idx, self.y_column_idx])
             X.append(features_vector)
         X = np.array(X)
         y = np.array(y).reshape((-1, 1))
