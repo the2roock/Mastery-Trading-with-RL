@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch import nn
 
@@ -21,3 +23,11 @@ class BiLSTM(nn.Module):
 
         out = self.out(x3)
         return out
+
+
+def load_trained() -> BiLSTM:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "static", "BiLSTM v1.pkl")
+    model = torch.load(path, map_location=device)
+    return model
+    

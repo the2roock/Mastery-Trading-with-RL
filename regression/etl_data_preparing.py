@@ -17,7 +17,7 @@ from regression.dataset_model import BiLSTMDataset
 
 class DataPrepareETL: 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    required_features = [
+    features = [
         "Open",
         "High",
         "Low",
@@ -31,16 +31,16 @@ class DataPrepareETL:
         self.df = self._load_data(data) if isinstance(data, str) else data
         self._check_data(self.df)
         self.scaler = self._load_scaler(scaler) if isinstance(scaler, str) else scaler
-        self.y_column_idx = self.df.columns.to_list().index("Close")
+        self.y_column_idx = self.features.index("Close")
 
     def _load_data(self, data_filename: str):
         data = pd.read_csv(data_filename, parse_dates=True, index_col="time_open")
         return data
 
     def _check_data(self, df: pd.DataFrame) -> bool:
-        for col in self.required_features:
+        for col in self.features:
             if col not in df.columns:
-                raise ValueError(f"Dataset should include these features: {self.required_features}")
+                raise ValueError(f"Dataset should include these features: {self.features}")
         return True
 
     def _load_scaler(self, scaler_filename: str):
@@ -49,7 +49,7 @@ class DataPrepareETL:
 
     def prepare(self) -> Tuple[torch.Tensor, torch.Tensor]:
         # Normalization
-        normalized = normalize(self.df, self.scaler).to_numpy()
+        normalized = normalize(self.df, self.scaler)[self.features].to_numpy()
         # Generate X, y where X is sequence and y is target, should be last columns in input dataset
         X, y = list(), list()
         for i in range(0, len(normalized) - (self.sequence_length + self.target_idx), self.target_idx):
