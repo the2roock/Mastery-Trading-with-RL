@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 
 
-class BiLSTMDataset(Dataset):
+class TrainDataset(Dataset):
     def __init__(self, features, labels):
         self.X = features
         self.y = labels

@@ -13,7 +13,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from preprocessing.etl import normalize
-from clustering.dataset_model import CnnDataset
+from utils import TrainDataset
 
 
 class DataPrepareETL: 
@@ -82,7 +82,7 @@ class DataPrepareETL:
         X_train_and_valid, X_test, y_train_and_valid, y_test = train_test_split(X, y, test_size=test_size)
         X_train, X_valid, y_train, y_valid = train_test_split(X_train_and_valid, y_train_and_valid, test_size=valid_size)
         # create dataloader for train only
-        train_dataset = CnnDataset(X_train, y_train)    
+        train_dataset = TrainDataset(X_train, y_train)    
         train_loader = DataLoader(train_dataset, shuffle=True, batch_size=self.batch_size)
         return train_loader, (X_valid, y_valid), (X_test, y_test)
 
