@@ -19,7 +19,6 @@ from utils import TrainDataset
 class DataPrepareETL: 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     features = [
-        "Close",
         "cluster",
         "prediction"
     ]
@@ -29,7 +28,7 @@ class DataPrepareETL:
         self.df = self._load_data(data) if isinstance(data, str) else data
         self._check_data(self.df)
         self.scaler = self._load_scaler(scaler) if isinstance(scaler, str) else scaler
-        self.y_column_idx = self.features.index("Close") - 1
+        self.y_column_idx = self.df.columns.to_list().index("Close") - 1
 
     def _load_data(self, data_filename: str):
         data = pd.read_csv(data_filename, parse_dates=True, index_col="time_open")
@@ -52,8 +51,10 @@ class DataPrepareETL:
         self.df["prediction"] = (self.df["prediction"] - self.df["Close"]) / self.df["Close"]
         self.df["price_change"] = 100 * (self.df["Close"].shift(-1) - self.df["Close"]) / self.df["Close"]
         self.df.dropna(inplace=True)
-        self.features.remove("Close")
-        self.features.extend(["RSI", "OBV"])
+        if "RSI" not in self.features:
+            self.features.append("RSI")
+        if "OBV" not in self.features:
+            self.features.append("OBV")
         # Normalization
         normalized = normalize(self.df[self.features], self.scaler)
         normalized["price_change"] = self.df["price_change"].values
@@ -82,6 +83,12 @@ class DataPrepareETL:
         X_train_and_valid, X_test, y_train_and_valid, y_test = train_test_split(X, y, test_size=test_size)
         X_train, X_valid, y_train, y_valid = train_test_split(X_train_and_valid, y_train_and_valid, test_size=valid_size)
         # create dataloader for train only
+        X_train = torch.tensor(X_train, dtype=torch.float32).to(self.device)
+        y_train = torch.tensor(y_train, dtype=torch.int64).to(self.device)
+        X_valid = torch.tensor(X_valid, dtype=torch.float32).to(self.device)
+        y_valid = torch.tensor(y_valid, dtype=torch.int64).to(self.device)
+        X_test = torch.tensor(X_test, dtype=torch.float32).to(self.device)
+        y_test = torch.tensor(y_test, dtype=torch.int64).to(self.device)
         train_dataset = TrainDataset(X_train, y_train)    
         train_loader = DataLoader(train_dataset, shuffle=True, batch_size=self.batch_size)
         return train_loader, (X_valid, y_valid), (X_test, y_test)
