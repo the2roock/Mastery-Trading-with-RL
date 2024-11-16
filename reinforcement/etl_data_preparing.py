@@ -20,8 +20,8 @@ class DataPrepareETL:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     features = [
         "Close",
-        "prediction",
-        "cluster"
+        "cluster",
+        "prediction"
     ]
     batch_size = 64
 
@@ -50,10 +50,10 @@ class DataPrepareETL:
         self.df["RSI"] = TA.RSI(self.df)
         self.df["OBV"] = TA.OBV(self.df)
         self.df["prediction"] = (self.df["prediction"] - self.df["Close"]) / self.df["Close"]
+        self.df["price_change"] = 100 * (self.df["Close"].shift(-1) - self.df["Close"]) / self.df["Close"]
         self.df.dropna(inplace=True)
         self.features.remove("Close")
         self.features.extend(["RSI", "OBV"])
-        self.df["price_change"] = 100 * (self.df["Close"].shift(-1) - self.df["Close"]) / self.df["Close"]
         # Normalization
         normalized = normalize(self.df[self.features], self.scaler)
         normalized["price_change"] = self.df["price_change"].values
