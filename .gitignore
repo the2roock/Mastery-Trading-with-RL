@@ -4,3 +4,5 @@ __pycache__
 *.csv
 *.pkl
 .DS_Store
+.json
+.png
