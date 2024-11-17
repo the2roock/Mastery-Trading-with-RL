@@ -3,6 +3,6 @@
 __pycache__
 *.csv
 *.pkl
-.DS_Store
-.json
-.png
+*.DS_Store
+*.json
+*.png
