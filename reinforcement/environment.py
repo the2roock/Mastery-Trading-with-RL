@@ -21,7 +21,7 @@ class Environment(gym.Env):
         self.observation_space = gym.spaces.Box(0, 1, (len(self.state_columns),))
     
     def reward(self, action: int) -> float:
-        bias = 2 if self.price_change > 0.1 else 0 if self.price_change < -0.1 else 1
+        bias = 2 if self.price_change >= 0.1 else 0 if self.price_change < -0.1 else 1
         reward = 1 if bias == action else -1
         return reward, self.step_idx == self.truncation, 0
 
