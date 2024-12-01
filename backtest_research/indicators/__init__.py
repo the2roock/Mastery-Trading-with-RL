@@ -1,1 +1,1 @@
-from .technical_analisys import sma
+from .technical_analysis import sma
