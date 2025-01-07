@@ -1,7 +1,7 @@
 from typing import List
 import asyncio
 
-from binance.client import AsyncClient
+from binance import AsyncClient
 from .config import BinanceConfig as Config
 
 from sqlalchemy.future import select

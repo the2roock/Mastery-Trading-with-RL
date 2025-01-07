@@ -3,7 +3,7 @@ from datetime import datetime
 import pytz
 import asyncio
 
-from binance.client import AsyncClient
+from binance import AsyncClient
 from .config import BinanceConfig as Config
 
 from sqlalchemy.future import select

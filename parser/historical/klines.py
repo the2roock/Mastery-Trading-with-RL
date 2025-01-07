@@ -3,7 +3,7 @@ import asyncio
 from datetime import datetime
 from time import time
 
-from binance.client import AsyncClient
+from binance import AsyncClient
 
 from sqlalchemy.future import select
 from sqlalchemy import text
@@ -41,6 +41,7 @@ async def get_max_time_open_for_symbols(symbols: List[Symbol], time_if_None: int
         Dict[Symbol, int]: ORM Symbol object and according time_opens.
     """
     symbol_ids = tuple(symbol.id for symbol in symbols)
+    symbol_ids = symbol_ids if len(symbol_ids) > 1 else 2 * symbol_ids
     sql_query = f"""
         select 
             id_symbol,
